@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light"><head>
+    <title> Can Yoleri | Living A Sweet PowerShell: #1 </title>
+    <meta charset="utf-8"><meta name="generator" content="Hugo 0.72.0" /><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+    <meta name="description" content="Security Addict">
+    
+    <link rel="stylesheet" href="https://canyoleri.github.io/css/style.min.67cd718c0a3c8009c771494d381fb7128246a454bd0518fed97cb65d257db948.css" integrity="sha256-Z81xjAo8gAnHcUlNOB&#43;3EoJGpFS9BRj&#43;2Xy2XSV9uUg=" crossorigin="anonymous" type="text/css">
+    
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+    
+    <link rel="shortcut icon" href="https://canyoleri.github.io/favicons/favicon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" sizes="180x180" href="https://canyoleri.github.io/favicons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="https://canyoleri.github.io/favicons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="https://canyoleri.github.io/favicons/favicon-16x16.png">
+    <link rel="canonical" href="https://canyoleri.github.io/post/livingsweetpwsh/">
+    
+    
+    <script type="text/javascript" src="https://canyoleri.github.io/js/anatole-header.min.c275265a259296f3dd50e8236a77fcbcadb1dbb9597d3045c675dcc2c7c58a93.js" integrity="sha256-wnUmWiWSlvPdUOgjanf8vK2x27lZfTBFxnXcwsfFipM=" crossorigin="anonymous"></script>
+</head><body><div class="sidebar animated fadeInDown">
+    <div class="logo-title">
+      <div class="title">
+        <img src="https://canyoleri.github.io/images/profile.jpg" alt="profile picture">
+        <h3 title=""><a href="/">Can Yoleri</a></h3>
+        <div class="description">
+          <p>Security Addict</p>
+        </div>
+      </div>
+    </div>
+    <ul class="social-links">
+        
+        <li>
+        <a href="https://www.linkedin.com/in/can-yoleri/" rel="me" aria-label="Linkedin">
+          <i class="fa fa-2x fa-linkedin" aria-hidden="true"></i>
+        </a>          
+        </li>
+
+        
+        <li>
+        <a href="https://github.com/canyoleri" rel="me" aria-label="GitHub">
+          <i class="fa fa-2x fa-github" aria-hidden="true"></i>
+        </a>          
+        </li>
+
+        
+        <li>
+        <a href="https://Twitter.com/CanYoleri" rel="me" aria-label="Twitter">
+          <i class="fa fa-2x fa-twitter" aria-hidden="true"></i>
+        </a>          
+        </li>
+
+        
+    </ul>
+    <div class="footer">
+        <div class="by_farbox">&copy; Can Yoleri 2020 </div>
+      </div>
+    </div>
+</div><div class="main">
+            <div class="page-top animated fadeInDown">
+    <ul class="nav">
+        
+        
+        
+        <li><a  href="/" title="">Home</a></li>
+        
+        
+        <li><a  href="/post/" title="">Posts</a></li>
+        
+        
+        <li><a  href="/about/" title="">About</a></li>
+        
+    </ul>
+    <div class="themeswitcher">
+        <a class="theme-switch" title="Switch Theme">
+            <i class="fa fa-adjust fa-fw" aria-hidden="true"></i>
+        </a>
+    </div>
+</div>
+
+            <div class="autopagerize_page_element">
+                <div class="content">
+<div class="post animated fadeInDown">
+    <div class="post-content">
+
+      <div class="post-title">
+        <h3>Living A Sweet PowerShell: #1
+        </h3>
+        
+        <div class="info">
+          <i class="fa fa-sun-o"></i><span class="date">Sat, Jun 20, 2020</span>
+          <i class="fa fa-clock-o"></i><span class="reading-time">7-minute read</span>
+        </div>
+        
+        </div>
+
+    <p>2018 yılında biraz yabancı kaynaklardan biraz da kendi araştırmalarım sonucunda laboratuvar ortamımda bir atak senaryosu denemiştim. Senaryoda MS17-010 zafiyetini kullanan bir saldırgan sızdığı bir makine üzerinde ele geçirdiği yetkili ama sınırlı erişimi olan kullanıcı üzerinden PowerShell Empire bağlantısı alıp DCSYNC, golden ticket ataklarını yaparak domain ortamını ele geçirdikten sonra WMI üzerinden yanal hareketler yaparak başka makineleri ele geçiriyordu. Bir yazı dizisi başlatarak bu atak senaryosu ve gelecek senaryolarda saldırılara savunma tarafında nasıl önlemler alabilir, SIEM kuralları geliştirebilir, nasıl tespit edebilir ve SOAR (Demisto) üzerinden müdahale edebiliriz gibi sorulara cevap aramak istedim. Gelecekteki yazılarımı buna göre şekillendirmeyi planlıyorum.</p>
+<h1 id="living-a-sweet-powershell-1"><strong>Living A Sweet PowerShell</strong>: #1</h1>
+<p>Ortamda neler var?</p>
+<ul>
+<li>Sysmon</li>
+<li>QRadar</li>
+<li>PowerShell loglarının konfigüre edilmiş olması (Module Logging vs..)</li>
+<li>Microsoft ATA</li>
+</ul>
+<blockquote>
+<ul>
+<li>Not: Dökümanda bazı ekran görüntülerini eski hazırladığım dökümandan aldığım için isimlerde, tarihlerde farklılık olabilir.</li>
+</ul>
+</blockquote>
+<p><br />
+<strong>Saldırgan tarafı:</strong></p>
+<p>MS17-010 zafiyetini kullanan saldırganımız Andre’nin bilgisayarını ele geçiriyor.</p>
+<img src="/images/livingsweetpwsh1/ms17-010-2.jpg" style="width:800px;"/>
+<p><br />
+<strong>Savunma tarafı:</strong></p>
+<p>Burada savunma tarafındakiler olarak PowerShell’in 2.0 versiyonunu kapatmamız gerekiyor. Çünkü bu sürümünde loglama kapasitesi yok denecek kadar az olduğu için haliyle tehdit aktörleri tarafından oldukça kullanışlı. Microsoft, PowerShell’in son sürümlerinde güvenlik seviyesini arttırmak için adımlar atmaktadır. Gelişmiş loglama özellikleri, çalıştırılan PowerShell komutları, scriptleri ve çıktılarının logları gibi önlemler sunmaktadır. Savunma tarafı için paha biçilemez bir kaynaktır.</p>
+<p>PowerShell V2 sürümü aktif mi onu kontrol edelim:</p>
+<p><img src="/images/livingsweetpwsh1/pwshv2.png" style="width:800px;" /></p>
+<p>Sırasıyla aşağıdaki komutları çalıştırıp V2 sürümünü disable ediyorum.</p>
+<pre><code>Disable-WindowsOptionalFeature -Online -FeatureName &quot;MicrosoftWindowsPowerShellV2Root&quot;
+
+Disable-WindowsOptionalFeature -Online -FeatureName &quot;MicrosoftWindowsPowerShellV2&quot;
+</code></pre><p><img src="/images/livingsweetpwsh1/pwshv2disable.png" style="width:800px;" /></p>
+<p><br />
+<strong>Saldırgan tarafı:</strong></p>
+<p>Empire&rsquo;a geri dönelim. Empire’dan bağlantı almak için önce listenerı ayarlıyoruz.</p>
+<p><img src="/images/livingsweetpwsh1/listeners.png" alt="listeners" style="width:800px;" /></p>
+<p>launcher powershell komutuyla payloadımızı görebiliyoruz.</p>
+<p><img src="/images/livingsweetpwsh1/payload.png" alt=""></p>
+<p>MS17-010 ile aldığımız shell ekranına launcher kodumuzu yazıp çalıştırınca Empire bağlantısı gelmiş oluyor.</p>
+<p><img src="/images/livingsweetpwsh1/payload2.png" alt=""></p>
+<p><br />
+<strong>Savunma tarafı:</strong></p>
+<p>Buraya kadar her şey sıkıntısız gibi, Empire bağlantımızı da aldık şimdi nasıl tespit edebiliriz? Ne gibi önlemler alabiliriz ona bakalım. Çalıştığınız kurumun güvenlik yatırımlarına bağlı olarak içeride Fireeye NX gibi güvenlik cihazlarınız varsa tespit etme şansınızı SIEM gibi ürünlerden ayrı olarak arttırabilirsiniz. (Fireeye NX yanına SSL visibility’i unutmayalım ☺️)​</p>
+<p>QRadar’da logları incelediğimizde PowerShell Module Logging açık olduğu için saldırganın base64 olarak çalıştırdığı kodun obfuscate - deobfuscate halini görebiliyoruz.</p>
+<p><img src="/images/livingsweetpwsh1/qradar-base64.png" style="zoom: 200%;" /></p>
+<p><img src="/images/livingsweetpwsh1/qradar-base64d.png" alt="qradar-base64d" style="width:800px;" /></p>
+<p>Loglara bakmaya devam ettikçe payloadın içerisindeki aşağıdaki kısımlar mutlaka dikkat çekecektir.</p>
+<pre><code>value=&quot;/admin/get.php&quot; ParameterBinding(Get-Random): name=&quot;InputObject&quot;; value=&quot;/news.php&quot; ParameterBinding(Get-Random): name=&quot;InputObject&quot;; value=&quot;/login/process.php&quot; 
+</code></pre><p><img src="/images/livingsweetpwsh1/qradar-value.png" alt="qradar-value" style="width:800px;" /></p>
+<p>Empire launcher’ında olan <strong>–enc</strong> komutunu tespit etmek için aşağıdaki gibi bir regex kullanabiliriz. Bu sayede sadece Empire için değil herhangi bir şekilde PowerShell’de <strong>encode</strong> komutunu kullanan her şeyi tespit edebiliriz.</p>
+<pre><code>\-[Ee^]{1,2}[NnCcOoDdEeMmAa^]+ [A-Za-z0-9+/=]{5,} 
+</code></pre><p><strong>QRadar</strong> üzerinde şöyle bir kural işimizi görecektir:</p>
+<p><img src="/images/livingsweetpwsh1/pwsh-regex.png" alt="pwsh-regex"></p>
+<p><strong>Sigma</strong>:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#66d9ef">title</span>: T1086-MITRE-PowerShell ENC Command Usage 
+<span style="color:#66d9ef">id</span>: -
+<span style="color:#66d9ef">description</span>: PowerShell ENC Command Usage 
+<span style="color:#66d9ef">references</span>: 
+    - https://unit42.paloaltonetworks.com/unit42-pulling-back-the-curtains-on-encodedcommand-powershell-attacks/
+
+<span style="color:#66d9ef">tags</span>:
+    - attack.Execution 
+    - attack.T1086
+    
+<span style="color:#66d9ef">logsource</span>:
+    <span style="color:#66d9ef">product</span>: windows
+    <span style="color:#66d9ef">service</span>: sysmon 
+    
+<span style="color:#66d9ef">date</span>: <span style="color:#ae81ff">9</span>/<span style="color:#ae81ff">6</span>/<span style="color:#ae81ff">2020</span>
+<span style="color:#66d9ef">author</span>: Can Yoleri
+
+<span style="color:#66d9ef">detection</span>:
+    <span style="color:#66d9ef">selection</span>:
+        
+        <span style="color:#66d9ef">EventID</span>: <span style="color:#ae81ff">1</span>  
+
+        <span style="color:#66d9ef">expression</span>: 
+
+            - <span style="color:#e6db74">&#39;\-[Ee^]{1,2}[NnCcOoDdEeMmAa^]+ [A-Za-z0-9+/=]{5,}&#39;</span>
+
+<span style="color:#66d9ef">condition</span>: selection
+<span style="color:#66d9ef">falsepositives</span>: 
+  — Legacy Apps.
+<span style="color:#66d9ef">level</span>: High
+</code></pre></div><p>SIEM üzerinde PowerShell veya CMD kullanılarak bir IP adresine bağlantı giderse alarm üretmesi için kural oluşturabiliriz.</p>
+<p>QRadar’da işimizi görecek seviyede şöyle bir kuralı kullanabiliriz:</p>
+<p><img src="/images/livingsweetpwsh1/qradar-rule.png" alt="qradar-rule" style="width:800px;" /></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#66d9ef">title</span>: T1059/T1086 - MITRE - Connectivity Monitor for PowerShell / CMD 
+<span style="color:#66d9ef">id</span>: -
+<span style="color:#66d9ef">description</span>: Connectivity Monitor for PowerShell / CMD 
+<span style="color:#66d9ef">references</span>: 
+    - 
+
+<span style="color:#66d9ef">tags</span>:
+    - attack.Execution 
+    - attack.T1059
+    - attack.T1086
+
+<span style="color:#66d9ef">logsource</span>:
+    <span style="color:#66d9ef">product</span>: windows
+    <span style="color:#66d9ef">service</span>: sysmon 
+
+<span style="color:#66d9ef">date</span>: <span style="color:#ae81ff">9</span>/<span style="color:#ae81ff">6</span>/<span style="color:#ae81ff">2020</span>
+<span style="color:#66d9ef">author</span>: Can Yoleri
+
+<span style="color:#66d9ef">detection</span>:
+    <span style="color:#66d9ef">selection</span>:
+        
+        <span style="color:#66d9ef">EventID</span>: <span style="color:#ae81ff">3</span>
+        
+        <span style="color:#66d9ef">Image</span>:
+
+            — <span style="color:#e6db74">&#39;*\powershell.exe&#39;</span>
+            — <span style="color:#e6db74">&#39;*\cmd.exe&#39;</span>
+
+        <span style="color:#66d9ef">expression</span>: <span style="color:#75715e">#dst_ip</span>
+
+            - <span style="color:#e6db74">&#39;\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.&#39;</span>
+
+<span style="color:#66d9ef">condition</span>: selection
+<span style="color:#66d9ef">falsepositives</span>: 
+  — Legacy Apps.
+<span style="color:#66d9ef">level</span>: High
+</code></pre></div><p><br /></p>
+<p><strong>Saldırgan tarafı:</strong> <br />
+Devam edelim..</p>
+<p>Aktif bağlantıları listeleyelim:</p>
+<p><img src="/images/livingsweetpwsh1/agents.png" alt="agents"></p>
+<p>İlk olarak clear-text parola tutuluyorsa görmek için Mimikatz çalıştırıyorum fakat Mimikatz hashler dışında bir şey vermiyor</p>
+<p><img src="/images/livingsweetpwsh1/mimi.png" alt="mimi"  /></p>
+<p><img src="/images/livingsweetpwsh1/mimi2.png" alt="mimi2"></p>
+<p>Creds komutuyla ele geçirdiğimiz tüm credential bilgilerini görebiliriz:</p>
+<p><img src="/images/livingsweetpwsh1/creds.png" alt="creds"></p>
+<p><br />
+<strong>Savunma Tarafı:</strong> <br /></p>
+<p>Mimikatz çalıştırdık bakalım nasıl loglar gelmiş.</p>
+<p>PowerShell loglamasının açık olmasının öneminden bahsetmiştik. Görüldüğü üzere PowerShell loglaması açık bir sistem üzerinde çalıştırılan komutların, scriptlerin çıktılarını rahatlıkla görebiliyoruz.</p>
+<p>Saldırganın gördüğü çıktının aynısı:</p>
+<p><img src="/images/livingsweetpwsh1/mimi-event.png" alt="mimi-event"></p>
+<p><strong>QRADAR</strong>:</p>
+<p><img src="/images/livingsweetpwsh1/mimi-qradar.png" alt="mimi-qradar" style="width:800px;" /></p>
+<p><strong>Tabi makine üzerinde AV, EDR, Ağ güvenlik ürünü varsa ve düzgün konfigürasyon yapılmışsa bu aktiviteyi tespit edip alarm üretecektir.</strong></p>
+<p>PowerShell loglarında eğer MD5/ NTLM hash bilgisi geçerse alarm üretmesi için bir kural yazalım. Aşağıdaki regex işimizi görecektir.</p>
+<p><img src="/images/livingsweetpwsh1/ntlm-hash.png" alt="ntlm-hash"></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#66d9ef">title</span>: T1003-MITRE-NTLM Hash in PWSH Logs 
+<span style="color:#66d9ef">id</span>: -
+<span style="color:#66d9ef">description</span>: NTLM Hash in PWSH Logs 
+<span style="color:#66d9ef">references</span>: 
+    - 
+<span style="color:#66d9ef">tags</span>:
+
+    - attack.CredentialAccess
+    - attack.T1003
+
+ <span style="color:#66d9ef">logsource</span>:
+
+    <span style="color:#66d9ef">product</span>: windows
+    <span style="color:#66d9ef">service</span>: PowerShell 
+
+<span style="color:#66d9ef">date</span>: <span style="color:#ae81ff">10</span>/<span style="color:#ae81ff">6</span>/<span style="color:#ae81ff">2020</span>
+<span style="color:#66d9ef">author</span>: Can Yoleri
+<span style="color:#66d9ef">detection</span>:
+
+    <span style="color:#66d9ef">selection</span>:
+
+        <span style="color:#66d9ef">EventID</span>: <span style="color:#ae81ff">4103</span>
+
+        <span style="color:#66d9ef">expression</span>: 
+
+            - <span style="color:#e6db74">&#39;\b[0-9a-fA-F]{32}\b&#39;</span>
+
+<span style="color:#66d9ef">condition</span>: selection
+<span style="color:#66d9ef">falsepositives</span>: 
+  — Legacy Apps.
+<span style="color:#66d9ef">level</span>: High
+</code></pre></div><p>Loglara bakarken görüyoruz ki source image PowerShell, target image whoami olup Granted Access değeri <strong>0x1FFFFF</strong> olan var.</p>
+<p>Yani değeri <strong>0x1FFFFF</strong> olan PowerShell.exe, Empire içerisinde bulunan Invoke-Mimikatz’ın bir parçası olan whoami.exe processini çalıştırmış olabilir. Fakat legal bir durumda olabilir, yine de güvenmeyip araştırmaya devam etmek en iyisi.</p>
+<p><img src="/images/livingsweetpwsh1/whoami2.png" alt="whoami2"></p>
+<p>Parent image PowerShell, image whoami.. Üstte yazdığımız encode kuralına çarpacak ve bize alarm üretecek.</p>
+<p><img src="/images/livingsweetpwsh1/whoami.png" alt="whoami" style="zoom: 200%;" /></p>
+<p><strong>Dikkat edilmesi gereken diğer konular:</strong></p>
+<p><img src="/images/livingsweetpwsh1/mimi-prevent.png" alt="mimi-prevent"></p>
+<p><img src="/images/livingsweetpwsh1/mimi-prevent2.png" alt="mimi-prevent2"></p>
+<p><br />
+<br /></p>
+<blockquote>
+<p><strong>Tüm olasılıklara hitap eden, edecek olayları bir araya getirip yapılandırmanın basit bir yolu yok fakat mimikatzi veya herhangi bir toolu tespit etmenin ötesine geçecek daha fazla kural, yapılandırmalara ihtiyaç olduğunu düşünüyorum.</strong></p>
+<p><strong>Bu tarz credential dumping methodlarını engellemek/tespit etmek için Microsoft’un credential guard, lsa protection gibi yapılandırmaları, AV, EDR gibi teknolojiler, trafiği analiz ederek NTLM hash, Mimikatz çıktısı, SMB üzerinden password dumpers transferlerini analiz edecek teknolojiler de gerekmektedir.</strong></p>
+</blockquote>
+<p><br />
+<br /></p>
+<p>Tabi burada Mimikatz&rsquo;e önlem olarak Group Policy sıkılaştırmaları da yapabiliriz.</p>
+<p><strong>Debug Privilege</strong></p>
+<p>Mimikatz&rsquo;in LSASS processiyle etkileşime girebilmesi için bu yetki gerekmektedir.</p>
+<p>Burada programları debug edebilecek yetkiyi sadece ihtiyacı olan belirli bir gruba veriyorum. (<strong>Principle of least privilege</strong>)</p>
+<p><img src="/images/livingsweetpwsh1/gpo.png" alt="gpo"></p>
+<p>Çalıştırılınca şöyle bir hata verecektir:</p>
+<p><img src="/images/livingsweetpwsh1/mimi-prevent3.png" alt="mimi-prevent3"></p>
+<p><strong>WDigest</strong></p>
+<p>Registry üzerinde aşağıdaki dizine gidip <strong>Negotiate</strong> ve <strong>UseLogonCredential</strong> değerlerini 0 yapıyoruz. Yetkisi olan bir saldırgan bu değerleri değiştirebilir ama bizde boş durmayıp bu değerleri SIEM’den izleyeceğiz. Eğer Registry değeri 1 olmuşsa saldırganın değiştirmiş olabileceği ihtimali üzerinde durup araştırmamızı ona göre yapacağız.</p>
+<pre><code>Computer\HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\SecurityProviders\WDigest 
+</code></pre><p><img src="/images/livingsweetpwsh1/wdigest.png" alt="wdigest"></p>
+<p><strong>Sigma:</strong></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#66d9ef">title</span>: T1003/T1112-MITRE-Registry Keys For Wdigest
+<span style="color:#66d9ef">id</span>: -
+<span style="color:#66d9ef">description</span>: Monitor for wdigest registry key
+<span style="color:#66d9ef">status</span>: experimental
+<span style="color:#66d9ef">references</span>:
+    - 
+<span style="color:#66d9ef">tags</span>:
+    - attack.CredentialDumping
+    - attack.T1003
+    - attack.DefenseEvasion 
+    - attack.T1112
+
+<span style="color:#66d9ef">logsource</span>:
+    <span style="color:#66d9ef">product</span>: windows
+    <span style="color:#66d9ef">service</span>: sysmon 
+
+<span style="color:#66d9ef">date</span>: <span style="color:#ae81ff">2020</span>/<span style="color:#ae81ff">06</span>/<span style="color:#ae81ff">1</span>
+<span style="color:#66d9ef">author</span>: Can Yoleri
+
+<span style="color:#66d9ef">detection</span>:
+    <span style="color:#66d9ef">selection</span>:
+        <span style="color:#66d9ef">ParentImage|contains</span>:
+
+            - <span style="color:#e6db74">&#39;\powershell.exe&#39;</span>
+            - <span style="color:#e6db74">&#39;\cmd.exe&#39;</span>
+
+        <span style="color:#66d9ef">Image</span>:
+            — <span style="color:#75715e">*\reg.exe</span>
+
+        <span style="color:#66d9ef">CommandLine|contains</span>:
+            - <span style="color:#e6db74">&#39;\SYSTEM\CurrentControlSet\Control\SecurityProviders\WDigest\&#39;
+</span><span style="color:#e6db74">            - &#39;</span>UseLogonCredential<span style="color:#e6db74">&#39;
+</span><span style="color:#e6db74">            - &#39;</span>Negotiate&#39;
+
+<span style="color:#66d9ef">condition</span>: <span style="color:#ae81ff">1</span> of them
+<span style="color:#66d9ef">falsepositives</span>: — unknown
+<span style="color:#66d9ef">level</span>: High
+
+</code></pre></div><p>Saldırgan komutu çalıştırdığında aşağıdaki gibi bir hata alacaktır:</p>
+<p><img src="/images/livingsweetpwsh1/wdigest2.png" alt="wdigest2"></p>
+<p><strong>LSA Protection</strong></p>
+<p>Bu korumayı kayıt defterinde RunAsPPL değeri 1 olarak ayarlayarak sağlanabilir.</p>
+<p><img src="/images/livingsweetpwsh1/lsaprotection.png" alt="lsaprotection"></p>
+<p>Çalıştırdığımızda:</p>
+<p><img src="/images/livingsweetpwsh1/lsaprotection2.png" alt="lsaprotection2"></p>
+<p><strong>Credential Caching</strong></p>
+<p>DC&rsquo;ye erişilememesi durumunda kullanıcının kimliğini doğrulamak için cachelenen hesap bilgisi olup olmadığını kontrol eder. Kayıt defterinde SECURITY’nin altına aşağıdaki gibi cache değeri girebiliriz.</p>
+<p><strong>HKEY_LOCAL_MACHINE\SECURITY\Cache</strong></p>
+<p>GPO ayarında da cache de tutmaması için 0 girebiliriz</p>
+<p><img src="/images/livingsweetpwsh1/cache.png" alt="cache"></p>
+<p>Çalıştırdığımızda:</p>
+<p><img src="/images/livingsweetpwsh1/cache2.png" alt="cache2"></p>
+<p>Önlemleri böyle böyle çoğaltabiliriz.. 
+<br />
+<br /></p>
+<p><strong>Saldırgan Tarafı:</strong></p>
+<p>Biz saldırgan olarak makineyi ele geçirmiştik, mimikatz çalıştırıp clear-text parola bulamamıştık. Şimdi DC&rsquo;nin IP adresini tespit ederek senaryomuz üzerinden devam edelim.</p>
+<p>Domain controller makinesini tespit etmek için <strong>situational_awareness/network/powerview/get_domain_controller</strong> modülünü kullanıyorum</p>
+<p><img src="/images/livingsweetpwsh1/getdc.png" alt="getdc"></p>
+<p>Domain controllerın IP adresinin 10.10.10.128 olduğunu görüyoruz.</p>
+<p><img src="/images/livingsweetpwsh1/getdc2.png" alt="getdc2"></p>
+<p><br />
+<br /></p>
+<p><strong>Savunma Tarafı:</strong>
+<br /></p>
+<p>Gelen PowerShell loglarında yine saldırganın gördüğü çıktının aynısını görüyoruz:</p>
+<p><img src="/images/livingsweetpwsh1/getdclog.png" alt="getdclog"></p>
+<p><strong>QRADAR:</strong></p>
+<p><img src="/images/livingsweetpwsh1/getdclog2.png" alt="getdclog2" style="width:800px;" /></p>
+<p><br /></p>
+<blockquote>
+<p><img src="/images/livingsweetpwsh1/pwsh.png" alt="pwsh"></p>
+</blockquote>
+<p><br />
+<br /></p>
+<p>Loglara bakmaya devam ettikçe gözümüze DNS Query logları da takılıyor. Encode PowerShell, Mimikatz ve şimdi de DC&rsquo;ye yapılan DNS isteği..</p>
+<p><img src="/images/livingsweetpwsh1/dns.png" alt="dns" style="width:800px;" /></p>
+<p><br />
+<br /></p>
+<p><strong>Saldırgan tarafı:</strong></p>
+<p>DCSYNC ile KRBTGT hesabının hashini alarak Golden Ticket oluşturacağız:</p>
+<p><strong>Nedir bu DCSYNC?</strong></p>
+<p>Bu atağı gerçekleştirebilmek için yetkili bir kullanıcıya ihtiyacımız bulunuyor, administrator, domain admin, enterprise admin haklarına sahip bir kullanıcı olabilir ya da spesifik olarak aşağıdaki yetkilere sahip herhangi bir kullanıcıyla da yapabiliriz.</p>
+<ul>
+<li>Replicating Directory Changes</li>
+<li>Replicating Directory Changes All</li>
+<li>Replicating Directory Changes In Filtered Set</li>
+</ul>
+<p><img src="/images/livingsweetpwsh1/andrei.png" alt="andrei"></p>
+<p>Saldırgan olarak benim böyle yetkili bir kullanıcıya erişimim varsa Mimikatz&rsquo;in DCSYNC özelliği ile kendimi Domain Controller gibi göstererek, taklit ederek MS-DRSR protokolü kullanıp hedeflenen Domain Controllerdan hesap parola bilgisini isteyebilirim.</p>
+<p><img src="/images/livingsweetpwsh1/dcsync.png" alt="dcsync"></p>
+<p>Modül üzerinde gerekli alanları dolduruyorum</p>
+<p><img src="/images/livingsweetpwsh1/dcsync2.png" alt="dcsync2"></p>
+<p><img src="/images/livingsweetpwsh1/dcsync3.png" alt="dcsync3"></p>
+<p><img src="/images/livingsweetpwsh1/dcsync4.png" alt="dcsync4"></p>
+<p><br />
+<br /></p>
+<p><strong>Savunma Tarafı:</strong></p>
+<p>Microsoft ATA’nın loglarına baktığımızda bize alarm ürettiğini görebiliriz. Ben öncesinde başka makinede vs de yaptığım için 2 accounts olarak görünüyor.</p>
+<p><img src="/images/livingsweetpwsh1/ata.png" alt="ata"></p>
+<p><br />
+<br /></p>
+<p><strong>Saldırgan tarafı:</strong></p>
+<p>Tekrar creds komutuyla baktığımızda krbtgt kullanıcısının hashini görebiliriz.</p>
+<p><img src="/images/livingsweetpwsh1/credsdc.png" alt="credsdc"></p>
+<p>Şimdi SID bilgisini öğrenelim</p>
+<p><img src="/images/livingsweetpwsh1/sid.png" alt="sid"></p>
+<p>Golden Ticket oluşturalım</p>
+<p><img src="/images/livingsweetpwsh1/goldenticket.png" alt="goldenticket"></p>
+<p>Eğer burada SID bilgisinde sonuna 519 yazsaydık root domain ortamında Enterprise Admin olurduk. Ama burada child domain üzerinden bu senaryoyu gerçekleştirmediğimiz için çokta fark etmeyecek.</p>
+<p>Golden Ticket oluşturma işlemimiz başarılı</p>
+<p><img src="/images/livingsweetpwsh1/goldenticket2.png" alt="goldenticket2"></p>
+<p><strong>QRADAR</strong>:</p>
+<p><img src="/images/livingsweetpwsh1/goldenqradar.png" alt="goldenqradar" style="width:800px;" /></p>
+<p><br />
+<br /></p>
+<p><strong>Savunma tarafı:</strong></p>
+<p>Microsoft ATA Golden Ticket aktivitesini tespit ediyor.</p>
+<p><img src="/images/livingsweetpwsh1/ata-golden.png" alt="ata-golden"></p>
+<p>Golden ticket oluşturduktan sonra tekrar DCSYNC modülünü calıstırıyoruz.</p>
+<p><img src="/images/livingsweetpwsh1/after-dcsync.png" alt="after-dcsync"></p>
+<p><br />
+<br /></p>
+<p><strong>Savunma tarafı:</strong></p>
+<p><strong>QRADAR:</strong></p>
+<p><img src="/images/livingsweetpwsh1/dcsync-end.png" alt="dcsync-end"></p>
+<p><br />
+<br /></p>
+<p><strong>Saldırgan tarafı:</strong></p>
+<p>Şimdi Invoke WMI lateral movement modülünü deneyelim. Listener ve bağlanmak istediğim makinenin adını yazınca Now active!</p>
+<p><img src="/images/livingsweetpwsh1/invokewmi.png" alt="invokewmi"></p>
+<p><br />
+<br /></p>
+<p><strong>Savunma Tarafı:</strong></p>
+<p>ZEDELEYİCİ makinesinin loglarına baktığımızda Empire launcherının çalıştığını görebiliyoruz.</p>
+<p>EventID:600</p>
+<p><img src="/images/livingsweetpwsh1/zedeleyici.png" alt="zedeleyici"></p>
+<p>EventID:800
+<img src="/images/livingsweetpwsh1/zedeleyici2.png" alt="zedeleyici2"></p>
+<p>O kadar encode edilmiş PowerShell logunun üzerine bunu görünce insanın aklında neler canlandığını az çok anlamışsınızdır 😱</p>
+<p><img src="/images/livingsweetpwsh1/zedeleyici3.png" alt="zedeleyici3"></p>
+<p>Makine üzerinde oturum açmış kullanıcıları görmek için <strong>get_loggedon</strong> modülünü çalıştırıyorum.</p>
+<p><img src="/images/livingsweetpwsh1/loggedon.png" alt="loggedon"></p>
+<p>Logları incelediğimde aşağıdaki logun içerisinde <strong>Get-NetLoggedon</strong> kısmı dikkatimi çekiyor.</p>
+<p><img src="/images/livingsweetpwsh1/loggedon2.png" alt="loggedon2" style="width:800px;" /></p>
+<p>Google’a yazdığımda bunun PowerView de kullanılan bir fonksiyon olduğunu görüyorum, birileri burada bilgi toplamış!</p>
+<p><img src="/images/livingsweetpwsh1/loggedon3.png" alt="loggedon3"></p>
+<p>Senaryoları çoğaltabiliriz mesela ATA&rsquo;nın tespit etmemesi için ticket oluştururken cipherları değiştirmek, silver ticket oluşturmak, module logging bypass gibi yöntemlerde uygulayabiliriz. Bunları da bir sonraki yazılarda yazmayı düşünüyorum. Bu senaryoyu child domain üzerinden parent domainde Enterprise Admin olmak için kullanmak daha mantıklı olacaktır. <strong>Tamamen hayal gücümüze bağlı.</strong></p>
+<p><br />
+<br />
+<br />
+Yazıda yanlışlık gördüğünüz yerlerde benimle iletişime geçebilirsiniz. 
+<br /></p>
+<p><strong>Referanslar</strong></p>
+<p><a href="https://devblogs.microsoft.com/powershell/windows-powershell-2-0-deprecation/">https://devblogs.microsoft.com/powershell/windows-powershell-2-0-deprecation/</a></p>
+<p><a href="https://unit42.paloaltonetworks.com/unit42-pulling-back-the-curtains-on-encodedcommand-powershell-attacks/">https://unit42.paloaltonetworks.com/unit42-pulling-back-the-curtains-on-encodedcommand-powershell-attacks/</a></p>
+<p><a href="https://docs.microsoft.com/en-us/windows/security/identity-protection/credential-guard/credential-guard-manage">https://docs.microsoft.com/en-us/windows/security/identity-protection/credential-guard/credential-guard-manage</a></p>
+<p><a href="https://docs.microsoft.com/en-us/windows-server/security/credentials-protection-and-management/configuring-additional-lsa-protection">https://docs.microsoft.com/en-us/windows-server/security/credentials-protection-and-management/configuring-additional-lsa-protection</a></p>
+<p><a href="https://techcommunity.microsoft.com/t5/windows-it-pro-blog/comprehensive-protection-for-your-credentials-with-credential/ba-p/765314">https://techcommunity.microsoft.com/t5/windows-it-pro-blog/comprehensive-protection-for-your-credentials-with-credential/ba-p/765314</a></p>
+<p><a href="https://underdefense.com/hidden-aspects-of-mimikatz-and-how-to-protect-your-infrastructure-by-using-sysmonsplunk/">https://underdefense.com/hidden-aspects-of-mimikatz-and-how-to-protect-your-infrastructure-by-using-sysmonsplunk/</a></p>
+<p><a href="https://securityriskadvisors.com/blog/detecting-in-memory-mimikatz/">https://securityriskadvisors.com/blog/detecting-in-memory-mimikatz/</a></p>
+    </div>
+    <div class="post-footer">
+      <div class="info">
+        
+        
+      </div>
+    </div>
+
+    
+           
+    
+</div>
+
+
+                </div>
+            </div>
+        </div>
+</body>
+
+
+
+<script type="text/javascript" src="https://canyoleri.github.io/js/jquery.min.86b1e8f819ee2d9099a783e50b49dff24282545fc40773861f9126b921532e4c.js" integrity="sha256-hrHo&#43;BnuLZCZp4PlC0nf8kKCVF/EB3OGH5EmuSFTLkw=" crossorigin="anonymous"></script>
+
+
+
+
+<script type="text/javascript" src="https://canyoleri.github.io/js/bundle.min.0f9c74cb78f13d1f15f33daff4037c70354f98acfbb97a6f61708966675c3cae.js" integrity="sha256-D5x0y3jxPR8V8z2v9AN8cDVPmKz7uXpvYXCJZmdcPK4=" crossorigin="anonymous"></script>
+
+<script type="text/javascript" src="https://canyoleri.github.io/js/medium-zoom.min.92f21c856129f84aeb719459b3e6ac621a3032fd7b180a18c04e1d12083f8aba.js" integrity="sha256-kvIchWEp&#43;ErrcZRZs&#43;asYhowMv17GAoYwE4dEgg/iro=" crossorigin="anonymous"></script></html></body>
+
+</html>
