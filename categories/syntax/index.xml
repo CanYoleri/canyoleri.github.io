@@ -6,10 +6,23 @@
     <description>Recent content in syntax on CAN YOLERI</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 20 Jun 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 20 Sep 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://canyoleri.github.io/categories/syntax/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Living A Sweet PowerShell: #2</title>
+      <link>https://canyoleri.github.io/post/livingsweetpwsh2/</link>
+      <pubDate>Sun, 20 Sep 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://canyoleri.github.io/post/livingsweetpwsh2/</guid>
+      <description>&lt;p align=&#34;center&#34;&gt;
+  &lt;img src=&#34;https://canyoleri.github.io/images/pwsholmadan/blue-red.jpg&#34; width=&#34;650&#34; height=&#34;400&#34;/&gt;
+&lt;/p&gt;
+&lt;p&gt;Bazı domain ortamlarında güvenlik veya sıkılaştırmalardan dolayı &lt;strong&gt;powershell.exe&lt;/strong&gt; - &lt;strong&gt;powershell_ise.exe&lt;/strong&gt; processlerinin çalışması GPO/Applocker üzerinden engellenebiliyor. Bu kısıtlamalar bazen yanlış da yapılandırılabiliyor.. Direkt olarak PowerShell komutlarımızı, scriptlerimizi çalıştıramıyoruz, sızma testlerinde Offensive PowerShell büyük bir nimetken bir kaç kısıtlama var diye pes edecek değiliz :) PowerShell, powershell.exe&amp;rsquo;den ibaret olmadığı için bu kısıtlamaları aşabiliyoruz.&lt;/p&gt;
+&lt;p&gt;Bugünkü senaryoda Red Team tarafında powershell.exe&amp;rsquo;nin engelli olduğu bir ortamda Empire üzerinden bağlantı almayı, PowerShell scripti, komutu çalıştırmayı, Blue Team tarafında bu saldırıları nasıl tespit edebileceğimizi, kurallar geliştireceğimizi ve kendi oluşturduğumuz atak senaryolarını Mandiant Security Validation (Verodin) ürünü üzerinden otomatize hale getirerek güvenlik ürünlerinin tepkilerini, SIEM kurallarını test edeceğiz.&lt;/p&gt;</description>
+    </item>
     
     <item>
       <title>Living A Sweet PowerShell: #1</title>
